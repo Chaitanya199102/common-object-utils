@@ -9,7 +9,6 @@ mvn clean install (or) import as spring boot starter project and run the Applica
 The following is the way in which mapping is stored:
 File: src/main/resources/json/mapping.json
 
-content: 
 {
 	"mapping": {
 		"request01_to_request02": {
