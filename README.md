@@ -7,7 +7,8 @@ Run Steps:
 mvn clean install (or) import as spring boot starter project and run the Application.java class
 
 The following is the way in which mapping is stored:
-File: src/main/resources/json/mapping.json\n
+File: src/main/resources/json/mapping.json
+
 content: 
 {
 	"mapping": {
