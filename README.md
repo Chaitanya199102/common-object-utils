@@ -10,17 +10,31 @@ The following is the way in which mapping is stored:
 File: src/main/resources/json/mapping.json
 
 {
+
 	"mapping": {
+	
 		"request01_to_request02": {
+		
 			"source_qualified_name": "com.request.transformation.model.Request01",
+			
 			"destination_qualified_name": "com.request.transformation.model.Request02",
+			
 			"fields_mapping":{
+			
 				"name": "name",
+				
 				"id": "identity",
+				
 				"address": "addressCorrespondense",
+				
 				"anything": "something",
+				
 				"comments": "comments"
+				
 			}
+			
 		}
+		
 	}
+	
 }
