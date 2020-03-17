@@ -1,8 +1,5 @@
 package com.request.transformation.util;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import org.json.JSONObject;
@@ -26,87 +23,26 @@ public class MappingUtil {
 		Resource resource = new ClassPathResource("json/mapping.json");
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			 JsonNode mappingNode = objectMapper.readTree(resource.getInputStream());
+			 JsonNode mappingNode = objectMapper.readTree(resource.getInputStream()).get("mapping");
 			 logger.info("mapping Node {}", mappingNode);
-			 JsonNode mappingObject = mappingNode.get("mapping").get(mappingKey);
+			 JsonNode mappingObject = mappingNode.get(mappingKey);
 			 logger.info("mapping Object {}", mappingObject);
 			 
 			 //accessing fields of the source object
-			 Class<?> sourceClass = Class.forName(mappingObject.get("source_qualified_name").asText());
+			 //Class<?> sourceClass = Class.forName(mappingObject.get("source_qualified_name").asText());
 			 Class<?> destinationClass = Class.forName(mappingObject.get("destination_qualified_name").asText());
-			 Field[] allFieldsSource = sourceClass.getDeclaredFields();
-			 Field[] allFieldsDestination = destinationClass.getDeclaredFields();
-
-			 //print and check all the fields
-			 logger.info("Fields in Source\n");
-			 Arrays.stream(allFieldsSource).forEach(System.out::println);
-			 logger.info("Fields in Destination\n");
-			 Arrays.stream(allFieldsDestination).forEach(System.out::println);
-			 
 			 
 			 //mapping from fields_mapping
 			 JsonNode fieldsMapping = mappingObject.get("fields_mapping");
-			 Iterator<String> sourceFieldsIterator = fieldsMapping.fieldNames();
-			 
-			 //creating destination object
-			 destination = destinationClass.newInstance();
-			 
-			 //setting properties from source to destination
-			 while(sourceFieldsIterator.hasNext()){
-				 String sourceFieldName = sourceFieldsIterator.next();
-				 Object sourceFieldValue = new PropertyDescriptor(sourceFieldName, sourceClass).getReadMethod().invoke(source);
-				 
-				 PropertyDescriptor destinationProperty = new PropertyDescriptor(fieldsMapping.get(sourceFieldName).asText(), destinationClass);
-				 destinationProperty.getWriteMethod().invoke(destination, sourceFieldValue);
-			 }
-			 
-		} catch (Exception e) {
-			logger.error("error transformaing ", e);
-		}
-		return destination;
-	}
-	
-	
-	public Object transformUsingJSON(Object source, String mappingKey) {
-		Object destination = null;
-		Resource resource = new ClassPathResource("json/mapping.json");
-		ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			 JsonNode mappingNode = objectMapper.readTree(resource.getInputStream());
-			 logger.info("mapping Node {}", mappingNode);
-			 JsonNode mappingObject = mappingNode.get("mapping").get(mappingKey);
-			 logger.info("mapping Object {}", mappingObject);
-			 
-			 //accessing fields of the source object
-			 Class<?> sourceClass = Class.forName(mappingObject.get("source_qualified_name").asText());
-			 Class<?> destinationClass = Class.forName(mappingObject.get("destination_qualified_name").asText());
-			 Field[] allFieldsSource = sourceClass.getDeclaredFields();
-			 Field[] allFieldsDestination = destinationClass.getDeclaredFields();
-
-			 //print and check all the fields
-			 logger.info("Fields in Source\n");
-			 Arrays.stream(allFieldsSource).forEach(System.out::println);
-			 logger.info("Fields in Destination\n");
-			 Arrays.stream(allFieldsDestination).forEach(System.out::println);
-			 
-			 
-			 //mapping from fields_mapping
-			 JsonNode fieldsMapping = mappingObject.get("fields_mapping");
-			 Iterator<String> sourceFieldsIterator = fieldsMapping.fieldNames();
-			 
-			 //creating destination object
-			 destination = destinationClass.newInstance();
-			 
+			 Iterator<String> sourceFieldsIterator = fieldsMapping.fieldNames();			 
 			 
 			 JSONObject sourceJSON = convertObjectToJSON(source);
-			 JSONObject destinationJSON = convertObjectToJSON(destination);
-			 
+			 JSONObject destinationJSON = new JSONObject();			 
 			 
 			 //setting properties from source to destination
 			 while(sourceFieldsIterator.hasNext()){
 				 String sourceFieldName = sourceFieldsIterator.next();
-				 destinationJSON.put(fieldsMapping.get(sourceFieldName).asText(), 
-						 sourceJSON.get(sourceFieldName));
+				 mapSourceFieldToDestinationField(sourceJSON, destinationJSON, sourceFieldName, mappingNode, mappingKey);
 			 }
 			 
 			 destination = convertJSONToObject(destinationJSON, destinationClass);
@@ -115,6 +51,51 @@ public class MappingUtil {
 			logger.error("error transformaing ", e);
 		}
 		return destination;
+	}
+	
+	public void mapSourceFieldToDestinationField(JSONObject sourceJSON, JSONObject destinationJSON, String mappingFieldName, 
+			JsonNode mappingNode, String mappingKey) {
+		
+		JsonNode fieldsMapping = mappingNode.get(mappingKey).get("fields_mapping");
+		String destinationFieldName = fieldsMapping.get(mappingFieldName).asText();
+		
+		if(destinationFieldName.contains("@")) {
+			String[] mappingNameArr = destinationFieldName.split("@");
+			String nestedFieldName = mappingNameArr[0];
+			String nestedMappingKey = mappingNameArr[1];
+			JsonNode nestedMapping = mappingNode.get(nestedMappingKey).get("fields_mapping");
+			Iterator<String> sourceFieldsIterator = nestedMapping.fieldNames();
+			
+			JSONObject nestedDestnationJSON = new JSONObject();
+			JSONObject nestedSourceJSON = sourceJSON.optJSONObject(mappingFieldName);
+			
+			while(nestedSourceJSON!=null && sourceFieldsIterator.hasNext()){
+				 mapSourceFieldToDestinationField(nestedSourceJSON, nestedDestnationJSON, sourceFieldsIterator.next(), mappingNode, nestedMappingKey);
+			}
+			
+			setValueToDestination(destinationJSON, nestedFieldName, nestedDestnationJSON);
+		} else {
+			setValueToDestination(destinationJSON, fieldsMapping.get(mappingFieldName).asText(), sourceJSON.get(mappingFieldName));
+		}
+	}
+	
+	
+	public void setValueToDestination(JSONObject destinationJSON, String destinationFieldName, Object value) {
+		if(destinationFieldName.contains(".")) {
+			String[] fieldNameArr = destinationFieldName.split("\\.");
+			String field = fieldNameArr[0];
+			String property = fieldNameArr[1];
+			JSONObject nestedObj = null;
+			
+			if(!destinationJSON.has(field)) {
+				nestedObj = new JSONObject();
+				destinationJSON.put(field, nestedObj);
+			} else
+				nestedObj = destinationJSON.getJSONObject(field);
+			
+			nestedObj.put(property, value);
+		} else 
+			destinationJSON.put(destinationFieldName, value);
 	}
 	
 	

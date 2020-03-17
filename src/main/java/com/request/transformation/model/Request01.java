@@ -12,6 +12,7 @@ public class Request01 {
 	private int count;
 	private String anotherCountAsString;
 	private String oneMoreCount;
+	private Information information;
 	
 	public String getName() {
 		return name;
@@ -61,10 +62,16 @@ public class Request01 {
 	public void setOneMoreCount(String oneMoreCount) {
 		this.oneMoreCount = oneMoreCount;
 	}
+	public Information getInformation() {
+		return information;
+	}
+	public void setInformation(Information information) {
+		this.information = information;
+	}
 	@Override
 	public String toString() {
 		return "Request01 [name=" + name + ", id=" + id + ", address=" + address + ", anything=" + anything
 				+ ", comments=" + comments + ", count=" + count + ", anotherCountAsString=" + anotherCountAsString
-				+ ", oneMoreCount=" + oneMoreCount + "]";
+				+ ", oneMoreCount=" + oneMoreCount + ", information=" + information + "]";
 	}
 }

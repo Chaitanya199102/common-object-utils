@@ -14,6 +14,7 @@ public class Request02 {
 	private String countString;
 	private int anotherCount;
 	private long oneMoreCountAsLong;
+	private Details details;
 	
 	public String getName() {
 		return name;
@@ -77,5 +78,11 @@ public class Request02 {
 				+ ", something=" + something + ", comments=" + comments + ", commentsArray="
 				+ Arrays.toString(commentsArray) + ", countString=" + countString + ", anotherCount=" + anotherCount
 				+ ", oneMoreCountAsLong=" + oneMoreCountAsLong + "]";
+	}
+	public Details getDetails() {
+		return details;
+	}
+	public void setDetails(Details details) {
+		this.details = details;
 	}
 }

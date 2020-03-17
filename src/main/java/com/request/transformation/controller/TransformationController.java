@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.request.transformation.model.Information;
 import com.request.transformation.model.Request01;
 import com.request.transformation.model.Request02;
 import com.request.transformation.util.MappingUtil;
@@ -34,6 +35,13 @@ public class TransformationController {
 		reuqest01.setAnotherCountAsString("11");
 		reuqest01.setOneMoreCount("129");
 		
+		Information information = new Information();
+		information.setInformation("you are cheater trump. Mexecio did not pay for the wall");
+		information.setInformationCount(1);
+		information.setConsentInfo("Provided consent to bully him");
+		information.setConsentControllerInfo("Joe Biden");
+		reuqest01.setInformation(information);
+		
 		List<String> comments = new ArrayList<>();
 		comments.add("Wow! he just woke up");
 		comments.add("he handled it");
@@ -41,7 +49,7 @@ public class TransformationController {
 		
 		logger.info("calling in transformation on request01 {} ", reuqest01);		
 		//Request02 request02 = (Request02) mappingUtil.transform(reuqest01, "request01_to_request02");
-		Request02 request02 = (Request02) mappingUtil.transformUsingJSON(reuqest01, "request01_to_request02");
+		Request02 request02 = (Request02) mappingUtil.transform(reuqest01, "request01_to_request02");
 		
 		logger.info("transformation done, request01->request02 {} ", request02);	
 		return ResponseEntity.ok(request02);

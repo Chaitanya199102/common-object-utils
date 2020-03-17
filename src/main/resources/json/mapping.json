@@ -3,7 +3,7 @@
 		"request01_to_request02": {
 			"source_qualified_name": "com.request.transformation.model.Request01",
 			"destination_qualified_name": "com.request.transformation.model.Request02",
-			"fields_mapping":{
+			"fields_mapping": {
 				"name": "name",
 				"id": "identity",
 				"address": "addressCorrespondense",
@@ -11,7 +11,18 @@
 				"comments": "commentsArray",
 				"count": "countString",
 				"anotherCountAsString": "anotherCount",
-				"oneMoreCount": "oneMoreCountAsLong"
+				"oneMoreCount": "oneMoreCountAsLong",
+				"information" : "details@information_to_details" 
+			}
+		},
+		"information_to_details": {
+			"source_qualified_name": "com.request.transformation.model.Information",
+			"destination_qualified_name": "com.request.transformation.model.Details",
+			"fields_mapping": {
+				"information": "details",
+				"informationCount": "detailsCount",
+				"consentInfo" : "additionalDetails.consentInformation",
+				"consentControllerInfo" : "additionalDetails.consentController"
 			}
 		}
 	}
