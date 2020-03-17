@@ -1,5 +1,6 @@
 package com.request.transformation.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Request02 {
@@ -9,6 +10,10 @@ public class Request02 {
 	private String addressCorrespondense;
 	private String something;
 	private List<String> comments;
+	private String[] commentsArray;
+	private String countString;
+	private int anotherCount;
+	private long oneMoreCountAsLong;
 	
 	public String getName() {
 		return name;
@@ -42,10 +47,35 @@ public class Request02 {
 		this.comments = comments;
 	}
 	
+	public String[] getCommentsArray() {
+		return commentsArray;
+	}
+	public void setCommentsArray(String[] commentsArray) {
+		this.commentsArray = commentsArray;
+	}
+	public String getCountString() {
+		return countString;
+	}
+	public void setCountString(String countString) {
+		this.countString = countString;
+	}
+	public int getAnotherCount() {
+		return anotherCount;
+	}
+	public void setAnotherCount(int anotherCount) {
+		this.anotherCount = anotherCount;
+	}
+	public long getOneMoreCountAsLong() {
+		return oneMoreCountAsLong;
+	}
+	public void setOneMoreCountAsLong(long oneMoreCountAsLong) {
+		this.oneMoreCountAsLong = oneMoreCountAsLong;
+	}
 	@Override
 	public String toString() {
 		return "Request02 [name=" + name + ", identity=" + identity + ", addressCorrespondense=" + addressCorrespondense
-				+ ", something=" + something + ", comments=" + comments + "]";
+				+ ", something=" + something + ", comments=" + comments + ", commentsArray="
+				+ Arrays.toString(commentsArray) + ", countString=" + countString + ", anotherCount=" + anotherCount
+				+ ", oneMoreCountAsLong=" + oneMoreCountAsLong + "]";
 	}
-	
 }

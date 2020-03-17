@@ -30,6 +30,9 @@ public class TransformationController {
 		reuqest01.setAddress("White House");
 		reuqest01.setName("Donal Trump");
 		reuqest01.setAnything("He is calling emergency on Coronavirus");
+		reuqest01.setCount(1);
+		reuqest01.setAnotherCountAsString("11");
+		reuqest01.setOneMoreCount("129");
 		
 		List<String> comments = new ArrayList<>();
 		comments.add("Wow! he just woke up");
@@ -37,7 +40,8 @@ public class TransformationController {
 		reuqest01.setComments(comments);
 		
 		logger.info("calling in transformation on request01 {} ", reuqest01);		
-		Request02 request02 = (Request02) mappingUtil.transform(reuqest01, "request01_to_request02");
+		//Request02 request02 = (Request02) mappingUtil.transform(reuqest01, "request01_to_request02");
+		Request02 request02 = (Request02) mappingUtil.transformUsingJSON(reuqest01, "request01_to_request02");
 		
 		logger.info("transformation done, request01->request02 {} ", request02);	
 		return ResponseEntity.ok(request02);

@@ -9,6 +9,9 @@ public class Request01 {
 	private String address;
 	private String anything;	
 	private List<String> comments;
+	private int count;
+	private String anotherCountAsString;
+	private String oneMoreCount;
 	
 	public String getName() {
 		return name;
@@ -40,9 +43,28 @@ public class Request01 {
 	public void setComments(List<String> comments) {
 		this.comments = comments;
 	}
+	public int getCount() {
+		return count;
+	}
+	public void setCount(int count) {
+		this.count = count;
+	}
+	public String getAnotherCountAsString() {
+		return anotherCountAsString;
+	}
+	public void setAnotherCountAsString(String anotherCountAsString) {
+		this.anotherCountAsString = anotherCountAsString;
+	}
+	public String getOneMoreCount() {
+		return oneMoreCount;
+	}
+	public void setOneMoreCount(String oneMoreCount) {
+		this.oneMoreCount = oneMoreCount;
+	}
 	@Override
 	public String toString() {
 		return "Request01 [name=" + name + ", id=" + id + ", address=" + address + ", anything=" + anything
-				+ ", comments=" + comments + "]";
+				+ ", comments=" + comments + ", count=" + count + ", anotherCountAsString=" + anotherCountAsString
+				+ ", oneMoreCount=" + oneMoreCount + "]";
 	}
 }

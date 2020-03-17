@@ -8,7 +8,10 @@
 				"id": "identity",
 				"address": "addressCorrespondense",
 				"anything": "something",
-				"comments": "comments"
+				"comments": "commentsArray",
+				"count": "countString",
+				"anotherCountAsString": "anotherCount",
+				"oneMoreCount": "oneMoreCountAsLong"
 			}
 		}
 	}
