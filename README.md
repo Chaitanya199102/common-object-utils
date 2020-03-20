@@ -28,10 +28,13 @@ File: src/main/resources/json/mapping.json
 
 # Nested Mapping
 For nested objects mapping can be as follows, mapping.json example for the same will be below the explaination
+
 1 . Mapping a property from source to a property in nested json object of destination
 	example: "consentInfo" : "additionalDetails.consentInformation"
+	
 2 . Mapping a property from source to a property a property in an array of destination object
 	example: "messageCode": "description[0].code"
+	
 3 . Mapping array of objects of one kind in source to array of objects of other kind in destination
 	example: "additionalDescriptions" : "additionalDesc@additionalDescription_to_additionalDesc"
 
