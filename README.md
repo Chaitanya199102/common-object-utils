@@ -38,3 +38,38 @@ File: src/main/resources/json/mapping.json
 	}
 	
 }
+
+For nested objects mapping can be as follows
+{
+	"mapping": {
+		"request01_to_request02": {
+			"source_qualified_name": "com.request.transformation.model.Request01",
+			"destination_qualified_name": "com.request.transformation.model.Request02",
+			"fields_mapping": {
+				...
+				"information" : "details@information_to_details" ,
+				"message" : "description[0].message",
+				"messageCode": "description[0].code",
+				"additionalDescriptions" : "additionalDesc@additionalDescription_to_additionalDesc"
+			}
+		},
+		"information_to_details": {
+			"source_qualified_name": "com.request.transformation.model.Information",
+			"destination_qualified_name": "com.request.transformation.model.Details",
+			"fields_mapping": {
+				"information": "details",
+				"informationCount": "detailsCount",
+				"consentInfo" : "additionalDetails.consentInformation",
+				"consentControllerInfo" : "additionalDetails.consentController"
+			}
+		},
+		"additionalDescription_to_additionalDesc" : {
+			"source_qualified_name": "com.request.transformation.model.AdditionalDescription",
+			"destination_qualified_name": "com.request.transformation.model.AdditionalDescription2",
+			"fields_mapping": {
+				"code": "code",
+				"message": "message"
+			}
+		}
+	}
+}
