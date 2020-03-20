@@ -27,7 +27,7 @@ File: src/main/resources/json/mapping.json
 
 
 ## Nested Mapping
-For nested objects mapping can be as follows, mapping.json example for the same will be below the explaination
+Nested objects mapping can be as follows, mapping.json example for the same will be below the explaination
 
 1 . Mapping a property from source to a property in nested json object of destination
 	
