@@ -40,6 +40,8 @@ For nested objects mapping can be as follows, mapping.json example for the same 
 3 . Mapping array of objects of one kind in source to array of objects of other kind in destination
 	
 	example: "additionalDescriptions" : "additionalDesc@additionalDescription_to_additionalDesc"
+	
+Example of the mapping.json which is available in src/main/resources/mapping.json
 
 	{
 	   "mapping": {
