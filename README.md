@@ -24,11 +24,17 @@ File: src/main/resources/json/mapping.json
 		}		
 	     }
 	}
-	
 
 
-For nested objects mapping can be as follows
-	
+# Nested Mapping
+For nested objects mapping can be as follows, mapping.json example for the same will be below the explaination
+1 . Mapping a property from source to a property in nested json object of destination
+	example: "consentInfo" : "additionalDetails.consentInformation"
+2 . Mapping a property from source to a property a property in an array of destination object
+	example: "messageCode": "description[0].code"
+3 . Mapping array of objects of one kind in source to array of objects of other kind in destination
+	example: "additionalDescriptions" : "additionalDesc@additionalDescription_to_additionalDesc"
+
 	{
 	   "mapping": {
 		"request01_to_request02": {
@@ -36,10 +42,10 @@ For nested objects mapping can be as follows
 			"destination_qualified_name": "com.request.transformation.model.Request02",
 			"fields_mapping": {
 				...
-				"information" : "details@information_to_details" , //The nested JSON mapping
-				"message" : "description[0].message", //mapping property to property in an array
+				"information" : "details@information_to_details" , //case1
+				"message" : "description[0].message", //case2
 				"messageCode": "description[0].code",
-				"additionalDescriptions" : "additionalDesc@additionalDescription_to_additionalDesc" //array to array 
+				"additionalDescriptions" : "additionalDesc@additionalDescription_to_additionalDesc" //case3
 			}
 		},
 		"information_to_details": { //nested objects mapping should be maintained separately
@@ -63,6 +69,8 @@ For nested objects mapping can be as follows
 	   }
      }
 
+# Updates
 UPCOMING CHANGES: Fields mentioned in the mapping classes will be verified automatically during application statrt.
 BUGS: Exception handling is missing, working on it.
+
 Suggestion and comments are welcome. Please write to chaitanya.ankam@gmail.com
