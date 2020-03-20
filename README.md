@@ -4,7 +4,7 @@ Adapter Pattern: https://en.wikipedia.org/wiki/Adapter_pattern.
 Developed using Java Reflection and JSON mapping of source and destination
 
 Run Steps:
-mvn clean install (or) import as spring boot starter project and run the Application.java class
+mvn clean install (or) import as spring boot starter project and run the RestRequestTransformationApplication.java class
 
 The following is the way in which mapping is stored:
 File: src/main/resources/json/mapping.json
