@@ -10,8 +10,7 @@ The following is the way in which mapping is stored:
 File: src/main/resources/json/mapping.json
 
 {
-
-	"mapping": {
+	"mapping": {<br>
 	
 		"request01_to_request02": {
 		
