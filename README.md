@@ -26,7 +26,7 @@ File: src/main/resources/json/mapping.json
 	}
 
 
-# Nested Mapping
+## Nested Mapping
 For nested objects mapping can be as follows, mapping.json example for the same will be below the explaination
 
 1 . Mapping a property from source to a property in nested json object of destination
@@ -72,7 +72,7 @@ For nested objects mapping can be as follows, mapping.json example for the same 
 	   }
      }
 
-# Updates
+## Updates
 UPCOMING CHANGES: Fields mentioned in the mapping classes will be verified automatically during application statrt.
 BUGS: Exception handling is missing, working on it.
 
