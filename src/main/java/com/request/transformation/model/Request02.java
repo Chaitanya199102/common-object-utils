@@ -1,6 +1,5 @@
 package com.request.transformation.model;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Request02 {
@@ -15,6 +14,8 @@ public class Request02 {
 	private int anotherCount;
 	private long oneMoreCountAsLong;
 	private Details details;
+	private List<Description> description;
+	private List<AdditionalDescription2> additionalDesc;
 	
 	public String getName() {
 		return name;
@@ -72,17 +73,22 @@ public class Request02 {
 	public void setOneMoreCountAsLong(long oneMoreCountAsLong) {
 		this.oneMoreCountAsLong = oneMoreCountAsLong;
 	}
-	@Override
-	public String toString() {
-		return "Request02 [name=" + name + ", identity=" + identity + ", addressCorrespondense=" + addressCorrespondense
-				+ ", something=" + something + ", comments=" + comments + ", commentsArray="
-				+ Arrays.toString(commentsArray) + ", countString=" + countString + ", anotherCount=" + anotherCount
-				+ ", oneMoreCountAsLong=" + oneMoreCountAsLong + "]";
-	}
 	public Details getDetails() {
 		return details;
 	}
 	public void setDetails(Details details) {
 		this.details = details;
+	}
+	public List<Description> getDescription() {
+		return description;
+	}
+	public void setDescription(List<Description> description) {
+		this.description = description;
+	}
+	public List<AdditionalDescription2> getAdditionalDesc() {
+		return additionalDesc;
+	}
+	public void setAdditionalDesc(List<AdditionalDescription2> additionalDesc) {
+		this.additionalDesc = additionalDesc;
 	}
 }

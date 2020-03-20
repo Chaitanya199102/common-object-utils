@@ -1,7 +1,10 @@
 package com.request.transformation.util;
 
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +19,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class MappingUtil {
 	
+	private static final String FIELDS_MAPPING = "fields_mapping";
+	private static final String NESTED_MAPPING_REF = "@";
+	private static final String ARRAY_PATTERN_WITH_PROPERTY = "\\[(.*?)\\].";
+	
 	private Logger logger = LoggerFactory.getLogger(MappingUtil.class);
 	
-	public Object transform(Object source, String mappingKey) {
+	public Object map(Object source, String mappingKey) {
 		Object destination = null;
 		Resource resource = new ClassPathResource("json/mapping.json");
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -32,19 +39,8 @@ public class MappingUtil {
 			 //Class<?> sourceClass = Class.forName(mappingObject.get("source_qualified_name").asText());
 			 Class<?> destinationClass = Class.forName(mappingObject.get("destination_qualified_name").asText());
 			 
-			 //mapping from fields_mapping
-			 JsonNode fieldsMapping = mappingObject.get("fields_mapping");
-			 Iterator<String> sourceFieldsIterator = fieldsMapping.fieldNames();			 
-			 
 			 JSONObject sourceJSON = convertObjectToJSON(source);
-			 JSONObject destinationJSON = new JSONObject();			 
-			 
-			 //setting properties from source to destination
-			 while(sourceFieldsIterator.hasNext()){
-				 String sourceFieldName = sourceFieldsIterator.next();
-				 mapSourceFieldToDestinationField(sourceJSON, destinationJSON, sourceFieldName, mappingNode, mappingKey);
-			 }
-			 
+			 JSONObject destinationJSON = mapSourceToDestination(sourceJSON, mappingNode, mappingKey);
 			 destination = convertJSONToObject(destinationJSON, destinationClass);
 			 
 		} catch (Exception e) {
@@ -53,49 +49,107 @@ public class MappingUtil {
 		return destination;
 	}
 	
-	public void mapSourceFieldToDestinationField(JSONObject sourceJSON, JSONObject destinationJSON, String mappingFieldName, 
-			JsonNode mappingNode, String mappingKey) {
-		
-		JsonNode fieldsMapping = mappingNode.get(mappingKey).get("fields_mapping");
-		String destinationFieldName = fieldsMapping.get(mappingFieldName).asText();
-		
-		if(destinationFieldName.contains("@")) {
-			String[] mappingNameArr = destinationFieldName.split("@");
-			String nestedFieldName = mappingNameArr[0];
-			String nestedMappingKey = mappingNameArr[1];
-			JsonNode nestedMapping = mappingNode.get(nestedMappingKey).get("fields_mapping");
-			Iterator<String> sourceFieldsIterator = nestedMapping.fieldNames();
-			
-			JSONObject nestedDestnationJSON = new JSONObject();
-			JSONObject nestedSourceJSON = sourceJSON.optJSONObject(mappingFieldName);
-			
-			while(nestedSourceJSON!=null && sourceFieldsIterator.hasNext()){
-				 mapSourceFieldToDestinationField(nestedSourceJSON, nestedDestnationJSON, sourceFieldsIterator.next(), mappingNode, nestedMappingKey);
-			}
-			
-			setValueToDestination(destinationJSON, nestedFieldName, nestedDestnationJSON);
-		} else {
-			setValueToDestination(destinationJSON, fieldsMapping.get(mappingFieldName).asText(), sourceJSON.get(mappingFieldName));
-		}
-	}
 	
+	public JSONObject mapSourceToDestination(JSONObject source, JsonNode mappingNode, String mappingKey) {
+		JSONObject destination = new JSONObject();
+		JsonNode fieldsMapping = mappingNode.get(mappingKey).get(FIELDS_MAPPING);
+		Iterator<String> sourceFieldsIterator = fieldsMapping.fieldNames();
+		
+		while(sourceFieldsIterator.hasNext()){
+			String sourceFieldName = sourceFieldsIterator.next();
+			String destinationFieldName = fieldsMapping.get(sourceFieldName).asText();
+			
+			if(destinationFieldName.contains(NESTED_MAPPING_REF)) {
+				String[] mappingNameArr = destinationFieldName.split(NESTED_MAPPING_REF);
+				String nestedFieldName = mappingNameArr[0];
+				String nestedMappingKey = mappingNameArr[1];
+				
+				JSONObject nestedSource = null;
+				JSONArray nestedSourceArray = null;
+				Object json = source.get(sourceFieldName);
+				
+				if (json instanceof JSONArray)
+					nestedSourceArray = (JSONArray) json;
+				else if (json instanceof JSONObject)
+					nestedSource = (JSONObject) json;
+				
+				if(nestedSource!=null) {
+					JSONObject nestedDestnation = mapSourceToDestination(nestedSource, mappingNode, nestedMappingKey);
+					setValueToDestination(destination, nestedFieldName, nestedDestnation);
+				} else if(nestedSourceArray!=null) {
+					JSONArray nestedDestnationArray = new JSONArray();
+					for(int i=0;i<nestedSourceArray.length();i++) {
+						JSONObject sourceArrayItem = nestedSourceArray.getJSONObject(i);
+						JSONObject nestedDestnation = mapSourceToDestination(sourceArrayItem, mappingNode, nestedMappingKey);
+						nestedDestnationArray.put(nestedDestnation);
+					}
+					setValueToDestination(destination, nestedFieldName, nestedDestnationArray);
+				}
+			} else 
+				setValueToDestination(destination, fieldsMapping.get(sourceFieldName).asText(), source.get(sourceFieldName));
+		}
+		
+		return destination;
+	}
+
 	
 	public void setValueToDestination(JSONObject destinationJSON, String destinationFieldName, Object value) {
-		if(destinationFieldName.contains(".")) {
+		
+		//The following is array mapping - mapping a property in source with a
+		//property of object at certain index in an array of destination object
+		if(destinationFieldName.contains("[")) {	
+			Pattern pattern = Pattern.compile(ARRAY_PATTERN_WITH_PROPERTY);
+		    Matcher matcher = pattern.matcher(destinationFieldName);
+		    
+		    if(matcher.find()) {		    	
+		    	String arrayField = destinationFieldName.substring(0, matcher.start());
+				String property = destinationFieldName.substring(matcher.end(), destinationFieldName.length());
+				int index = Integer.parseInt(destinationFieldName.substring(matcher.start()+1, matcher.end()-2));
+				
+				JSONObject nestedObj = null;
+				JSONArray nestedJSONArray = null;
+				
+				if(destinationJSON.has(arrayField))
+					nestedJSONArray = destinationJSON.getJSONArray(arrayField);
+				else {
+					nestedJSONArray = new JSONArray();
+					destinationJSON.put(arrayField, nestedJSONArray);
+				}
+					
+				if(nestedJSONArray.isNull(index)) {
+					nestedObj = new JSONObject();
+					nestedJSONArray.put(nestedObj);					
+				} else 
+					nestedObj = nestedJSONArray.getJSONObject(index);
+				
+				nestedObj.put(property, value);
+		    }
+			
+		} 
+		
+		// mapping a property in source with a property of nested object in destination
+		else if(destinationFieldName.contains(".")) {		
+			
 			String[] fieldNameArr = destinationFieldName.split("\\.");
 			String field = fieldNameArr[0];
 			String property = fieldNameArr[1];
 			JSONObject nestedObj = null;
 			
-			if(!destinationJSON.has(field)) {
+			if(destinationJSON.has(field))
+				nestedObj = destinationJSON.getJSONObject(field);
+			else {
 				nestedObj = new JSONObject();
 				destinationJSON.put(field, nestedObj);
-			} else
-				nestedObj = destinationJSON.getJSONObject(field);
+			}
 			
 			nestedObj.put(property, value);
-		} else 
+			
+		} 
+		
+		// mapping a property in source with destination
+		else 
 			destinationJSON.put(destinationFieldName, value);
+		
 	}
 	
 	
@@ -110,4 +164,5 @@ public class MappingUtil {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return objectMapper.readValue(jsonObject.toString(), classNameRef);
 	}
+	
 }

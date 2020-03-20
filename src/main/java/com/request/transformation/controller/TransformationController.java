@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.request.transformation.model.AdditionalDescription;
 import com.request.transformation.model.Information;
 import com.request.transformation.model.Request01;
 import com.request.transformation.model.Request02;
@@ -41,15 +42,31 @@ public class TransformationController {
 		information.setConsentInfo("Provided consent to bully him");
 		information.setConsentControllerInfo("Joe Biden");
 		reuqest01.setInformation(information);
+		reuqest01.setMessage("Coronavirus is a chinese virus");
+		reuqest01.setMessageCode("COVED 19");
 		
 		List<String> comments = new ArrayList<>();
 		comments.add("Wow! he just woke up");
 		comments.add("he handled it");
 		reuqest01.setComments(comments);
 		
+		
+		List<AdditionalDescription> additionalDescriptions = new ArrayList<>();
+		AdditionalDescription additionalDescription = new AdditionalDescription();
+		additionalDescription.setCode("CORONA VIRUS");
+		additionalDescription.setMessage("Deadly virus");
+		
+		AdditionalDescription additionalDescription2 = new AdditionalDescription();
+		additionalDescription2.setCode("SARS");
+		additionalDescription2.setMessage("Deadly virus too");
+		additionalDescriptions.add(additionalDescription);
+		additionalDescriptions.add(additionalDescription2);
+		
+		reuqest01.setAdditionalDescriptions(additionalDescriptions);
+		
 		logger.info("calling in transformation on request01 {} ", reuqest01);		
 		//Request02 request02 = (Request02) mappingUtil.transform(reuqest01, "request01_to_request02");
-		Request02 request02 = (Request02) mappingUtil.transform(reuqest01, "request01_to_request02");
+		Request02 request02 = (Request02) mappingUtil.map(reuqest01, "request01_to_request02");
 		
 		logger.info("transformation done, request01->request02 {} ", request02);	
 		return ResponseEntity.ok(request02);

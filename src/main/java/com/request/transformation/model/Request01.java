@@ -13,6 +13,9 @@ public class Request01 {
 	private String anotherCountAsString;
 	private String oneMoreCount;
 	private Information information;
+	private String message;
+	private String messageCode;
+	private List<AdditionalDescription> additionalDescriptions;
 	
 	public String getName() {
 		return name;
@@ -68,10 +71,22 @@ public class Request01 {
 	public void setInformation(Information information) {
 		this.information = information;
 	}
-	@Override
-	public String toString() {
-		return "Request01 [name=" + name + ", id=" + id + ", address=" + address + ", anything=" + anything
-				+ ", comments=" + comments + ", count=" + count + ", anotherCountAsString=" + anotherCountAsString
-				+ ", oneMoreCount=" + oneMoreCount + ", information=" + information + "]";
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getMessageCode() {
+		return messageCode;
+	}
+	public void setMessageCode(String messageCode) {
+		this.messageCode = messageCode;
+	}
+	public List<AdditionalDescription> getAdditionalDescriptions() {
+		return additionalDescriptions;
+	}
+	public void setAdditionalDescriptions(List<AdditionalDescription> additionalDescriptions) {
+		this.additionalDescriptions = additionalDescriptions;
 	}
 }
