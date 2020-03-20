@@ -63,10 +63,6 @@ For nested objects mapping can be as follows
 	   }
      }
 
-UPCOMING CHANGES:
-Fields mentioned in the mapping classes will be verified automatically during application statrt.
-
-BUGS:
-No Bugs found yet.
-
+UPCOMING CHANGES: Fields mentioned in the mapping classes will be verified automatically during application statrt.
+BUGS: Exception handling is missing, working on it.
 Suggestion and comments are welcome. Please write to chaitanya.ankam@gmail.com
