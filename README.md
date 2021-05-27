@@ -1,4 +1,7 @@
-# OBJECT-SWITCH-MAPPER
+# Common Object Utilities
+
+
+1. Object Switch Mapper
 Primitive way of transforming one object to another using configuration.
 This Project has an example of an adapter to transform request from one form to another to make api calls and transforms response back too.
 Adapter Pattern: https://en.wikipedia.org/wiki/Adapter_pattern.
